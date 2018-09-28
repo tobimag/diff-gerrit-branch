@@ -6,6 +6,10 @@ class GitLogEntry:
         self.short_name = short_name
         self.change_id = change_id
 
+    def __repr__(self):
+
+        return self.short_name + " | Change-Id: " + self.change_id
+
     def __eq__(self, other):
 
         if isinstance(other, self.__class__):

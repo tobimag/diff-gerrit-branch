@@ -6,14 +6,14 @@ from statemachine import StateMachine, State
 class LookForGitCommitId(State):
 
     def run(self):
-        print("Looking for commit ID")
+        pass
 
     def next(self, input):
 
         pattern = re.compile("(commit )([a-f0-9]+)")
         match = re.fullmatch(pattern, input)
         if match:
-            GitLogParser.entries.append({'commit': match.group(2)})
+            GitLogParser.entries.append({'CommitId': match.group(2)})
             return GitLogParser.lookForAuthor
 
         return GitLogParser.lookForGitCommitId
@@ -22,7 +22,7 @@ class LookForGitCommitId(State):
 class LookForAuthor(State):
 
     def run(self):
-        print("Looking for Author")
+        pass
 
     def next(self, input):
 
@@ -37,7 +37,7 @@ class LookForAuthor(State):
 class LookForDate(State):
 
     def run(self):
-        print("Looking for Date")
+        pass
 
     def next(self, input):
 
@@ -53,7 +53,7 @@ class LookForDate(State):
 class LookForShortName(State):
 
     def run(self):
-        print("Looking for Short Name")
+        pass
 
     def next(self, input):
 
@@ -69,7 +69,7 @@ class LookForShortName(State):
 class LookForGerritChangeId(State):
 
     def run(self):
-        print("Looking for Gerrit Change-Id")
+        pass
 
     def next(self, input):
 
@@ -82,7 +82,7 @@ class LookForGerritChangeId(State):
         pattern = re.compile("(commit )([a-f0-9]+)")
         match = re.fullmatch(pattern, input)
         if match:
-            GitLogParser.entries.append({'commit': match.group(2)})
+            GitLogParser.entries.append({'CommitId': match.group(2)})
             return GitLogParser.lookForAuthor
 
         return GitLogParser.lookForGerritChangeId
@@ -93,6 +93,7 @@ class GitLogParser(StateMachine):
     def __init__(self):
 
         StateMachine.__init__(self, GitLogParser.lookForGitCommitId)
+        GitLogParser.entries = []
 
 
 GitLogParser.lookForGitCommitId = LookForGitCommitId()
@@ -101,5 +102,3 @@ GitLogParser.lookForDate = LookForDate()
 GitLogParser.lookForGitCommitId = LookForGitCommitId()
 GitLogParser.lookForShortName = LookForShortName()
 GitLogParser.lookForGerritChangeId = LookForGerritChangeId()
-
-GitLogParser.entries = []
