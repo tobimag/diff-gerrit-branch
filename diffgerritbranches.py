@@ -3,7 +3,7 @@
 import subprocess, io, argparse
 
 from gitlogparser import GitLogParser
-from gitlogentry import GitLogEntry
+from gerritchange import GerritChange
 
 
 def print_results(results, first_branch_name, second_branch_name):
@@ -20,11 +20,11 @@ def print_results(results, first_branch_name, second_branch_name):
         print(entry)
 
 
-def diff_log_entries(first_log_entries, second_log_entries):
+def diff_changes(changes_in_first_branch, changes_in_second_branch):
 
-    changes_in_both_branches = set(first_log_entries) & set(second_log_entries)
-    changes_only_in_first_branch = set(first_log_entries) - set(second_log_entries)
-    changes_only_in_second_branch = set(second_log_entries) - set(first_log_entries)
+    changes_in_both_branches = set(changes_in_first_branch) & set(changes_in_second_branch)
+    changes_only_in_first_branch = set(changes_in_first_branch) - set(changes_in_second_branch)
+    changes_only_in_second_branch = set(changes_in_second_branch) - set(changes_in_first_branch)
 
     result = {'both': changes_in_both_branches,
               'first': changes_only_in_first_branch,
@@ -33,13 +33,13 @@ def diff_log_entries(first_log_entries, second_log_entries):
     return result
 
 
-def create_git_log_entries(raw_git_log):
+def create_gerrit_changes(raw_git_log):
 
     GitLogParser().run_all(raw_git_log)
-    git_log_entries =  []
-    for entry in GitLogParser.entries:
-        git_log_entries.append(GitLogEntry(entry['CommitId'], entry['ShortName'], entry.get('ChangeId', "")))
-    return git_log_entries
+    gerrit_changes =  []
+    for log_post in GitLogParser.logposts:
+        gerrit_changes.append(GerritChange(log_post['CommitId'], log_post['ShortName'], log_post.get('ChangeId', "")))
+    return gerrit_changes
 
 
 def read_git_log(branch):
@@ -59,15 +59,15 @@ def main():
     parser.add_argument('second_branch', metavar='<second branch>')
     args = parser.parse_args()
 
-    first_git_branch = args.first_branch
-    second_git_branch = args.second_branch
+    first_branch_name = args.first_branch
+    second_branch_name = args.second_branch
 
-    first_branch_log_entries = create_git_log_entries(read_git_log(first_git_branch))
-    second_branch_log_entries = create_git_log_entries(read_git_log(second_git_branch))
+    changes_in_first_branch = create_gerrit_changes(read_git_log(first_branch_name))
+    changes_in_second_branch = create_gerrit_changes(read_git_log(second_branch_name))
 
-    result = diff_log_entries(first_branch_log_entries, second_branch_log_entries)
+    result = diff_changes(changes_in_first_branch, changes_in_second_branch)
 
-    print_results(result, first_git_branch, second_git_branch)
+    print_results(result, first_branch_name, second_branch_name)
 
 
 if __name__ == '__main__':

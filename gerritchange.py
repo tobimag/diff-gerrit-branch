@@ -1,4 +1,4 @@
-class GitLogEntry:
+class GerritChange:
 
     def __init__(self, sha_id, short_name, change_id):
 

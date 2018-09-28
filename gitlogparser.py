@@ -13,7 +13,7 @@ class LookForGitCommitId(State):
         pattern = re.compile("(commit )([a-f0-9]+)")
         match = re.fullmatch(pattern, input)
         if match:
-            GitLogParser.entries.append({'CommitId': match.group(2)})
+            GitLogParser.logposts.append({'CommitId': match.group(2)})
             return GitLogParser.lookForAuthor
 
         return GitLogParser.lookForGitCommitId
@@ -60,7 +60,7 @@ class LookForShortName(State):
         pattern = re.compile("[A-Za-z0-9 ._\-/]+")
         match = re.fullmatch(pattern, input)
         if match:
-            GitLogParser.entries[-1].update({'ShortName': match.group(0)})
+            GitLogParser.logposts[-1].update({'ShortName': match.group(0)})
             return GitLogParser.lookForGerritChangeId
 
         return GitLogParser.lookForShortName
@@ -76,13 +76,13 @@ class LookForGerritChangeId(State):
         pattern = re.compile("(Change-Id: )(I[a-z0-9]+)")
         match = re.fullmatch(pattern, input)
         if match:
-            GitLogParser.entries[-1].update({'ChangeId': match.group(2)})
+            GitLogParser.logposts[-1].update({'ChangeId': match.group(2)})
             return GitLogParser.lookForGitCommitId
 
         pattern = re.compile("(commit )([a-f0-9]+)")
         match = re.fullmatch(pattern, input)
         if match:
-            GitLogParser.entries.append({'CommitId': match.group(2)})
+            GitLogParser.logposts.append({'CommitId': match.group(2)})
             return GitLogParser.lookForAuthor
 
         return GitLogParser.lookForGerritChangeId
@@ -93,7 +93,7 @@ class GitLogParser(StateMachine):
     def __init__(self):
 
         StateMachine.__init__(self, GitLogParser.lookForGitCommitId)
-        GitLogParser.entries = []
+        GitLogParser.logposts = []
 
 
 GitLogParser.lookForGitCommitId = LookForGitCommitId()
