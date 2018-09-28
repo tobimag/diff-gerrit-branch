@@ -9,6 +9,9 @@ def create_git_log_entries(raw_git_log):
 
     GitLogParser().run_all(raw_git_log)
 
+    print(GitLogParser.entries)
+
+
 
 def read_git_log(branch):
 
