@@ -19,3 +19,7 @@ class GitLogEntry:
     def __ne__(self, other):
 
         return not self == other
+
+    def __hash__(self):
+
+        return hash(self.change_id)

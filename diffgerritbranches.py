@@ -21,36 +21,9 @@ def print_results(results, first_branch_name, second_branch_name):
 
 def diff_log_entries(first_log_entries, second_log_entries):
 
-    changes_in_both_branches = []
-    changes_only_in_first_branch = []
-    changes_only_in_second_branch = []
-
-    for entry_in_first_log in first_log_entries:
-
-        if not entry_in_first_log.change_id:
-            break
-
-        for entry_in_second_log in second_log_entries:
-
-            if entry_in_first_log == entry_in_second_log:
-                changes_in_both_branches.append(entry_in_first_log)
-                break
-
-        else:
-            changes_only_in_first_branch.append(entry_in_first_log)
-
-    for entry_in_second_log in second_log_entries:
-
-        if not entry_in_second_log.change_id:
-            break
-
-        for entry_in_first_log in first_log_entries:
-
-            if entry_in_second_log == entry_in_first_log:
-                break
-
-        else:
-            changes_only_in_second_branch.append(entry_in_second_log)
+    changes_in_both_branches = set(first_log_entries) & set(second_log_entries)
+    changes_only_in_first_branch = set(first_log_entries) - set(second_log_entries)
+    changes_only_in_second_branch = set(second_log_entries) - set(first_log_entries)
 
     result = {'both': changes_in_both_branches,
               'first': changes_only_in_first_branch,
@@ -66,7 +39,6 @@ def create_git_log_entries(raw_git_log):
     for entry in GitLogParser.entries:
         git_log_entries.append(GitLogEntry(entry['CommitId'], entry['ShortName'], entry.get('ChangeId', "")))
     return git_log_entries
-
 
 
 def read_git_log(branch):
