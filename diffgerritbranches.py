@@ -1,40 +1,23 @@
 #!/usr/bin/env python
 
-import subprocess
-import io
+import subprocess, io
+
+from gitlogparser import GitLogParser
 
 
-class GitLogEntry:
+def create_git_log_entries(raw_git_log):
 
-    def __init__(self, sha_id, short_name, change_id):
-
-        self.sha_id = sha_id
-        self.short_name = short_name
-        self.change_id = change_id
-
-    def __eq__(self, other):
-
-        if isinstance(other, self.__class__):
-            return self.change_id == other.change_id
-        return False
-
-    def __ne__(self, other):
-
-        return not self == other
-
-
-def git_log_entries_creator(raw_git_log):
-
-    string_buffer = io.StringIO(raw_git_log)
-    for line in string_buffer:
-        display(line)
-
-
+    GitLogParser().run_all(raw_git_log)
 
 
 def read_git_log(branch):
 
-    return subprocess.check_output(['git', 'log', branch]).decode('utf8')
+    raw_log = io.StringIO(subprocess.check_output(['git', 'log', branch]).decode('utf8'))
+    log_as_list = []
+    for line in raw_log:
+        log_as_list.append(line.lstrip().rstrip())
+
+    return log_as_list
 
 
 def main():
@@ -42,7 +25,7 @@ def main():
     first_git_branch = 'first_test_branch'
     second_git_branch = 'second_test_branch'
 
-    git_log_entries_creator(read_git_log(first_git_branch))
+    create_git_log_entries(read_git_log(first_git_branch))
 
 
 if __name__ == '__main__':
