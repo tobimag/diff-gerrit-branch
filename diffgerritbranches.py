@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, io
+import subprocess, io, argparse
 
 from gitlogparser import GitLogParser
 from gitlogentry import GitLogEntry
@@ -9,11 +9,12 @@ from gitlogentry import GitLogEntry
 def print_results(results, first_branch_name, second_branch_name):
 
     print('Unique changes on ' + first_branch_name + ':')
+    print('-'*60)
     for entry in results['first']:
         print(entry)
 
     print('')
-
+    print('-' * 60)
     print('Unique changes on ' + second_branch_name + ':')
     for entry in results['second']:
         print(entry)
@@ -53,8 +54,13 @@ def read_git_log(branch):
 
 def main():
 
-    first_git_branch = 'first_test_branch'
-    second_git_branch = 'second_test_branch'
+    parser = argparse.ArgumentParser(description="Get changes not shared between two branches.")
+    parser.add_argument('first_branch', metavar='<first branch>')
+    parser.add_argument('second_branch', metavar='<second branch>')
+    args = parser.parse_args()
+
+    first_git_branch = args.first_branch
+    second_git_branch = args.second_branch
 
     first_branch_log_entries = create_git_log_entries(read_git_log(first_git_branch))
     second_branch_log_entries = create_git_log_entries(read_git_log(second_git_branch))
