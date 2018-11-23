@@ -1,14 +1,18 @@
+from datetime import datetime
+
 class GerritChange:
 
-    def __init__(self, sha_id, short_name, change_id):
+    def __init__(self, commit_id, short_name, change_id, date):
 
-        self.sha_id = sha_id
+        self.commit_id = commit_id
         self.short_name = short_name
         self.change_id = change_id
+        self.date = datetime.strptime(date, '%b %d %H:%M:%S %Y')
 
     def __repr__(self):
 
-        return self.short_name + " | Change-Id: " + self.change_id
+        return "{} | {} | Change-Id: {} | Commit-Id: {}".format(
+            self.date, self.short_name, self.change_id[0:6], self.commit_id[0:6])
 
     def __eq__(self, other):
 

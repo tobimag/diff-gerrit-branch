@@ -26,7 +26,7 @@ class LookForAuthor(State):
 
     def next(self, input):
 
-        pattern = re.compile("Author: [A-Za-z ]+ \<[a-zA-Z0-9.]+@[a-zA-Z0-9]+.[a-zA-Z]+\>")
+        pattern = re.compile("(Author: )([A-Za-z ]+ \<[a-zA-Z0-9.]+@[a-zA-Z0-9]+.[a-zA-Z]+\>)")
         match = re.fullmatch(pattern, input)
         if match:
             return GitLogParser.lookForDate
@@ -42,9 +42,10 @@ class LookForDate(State):
     def next(self, input):
 
         pattern = \
-            re.compile("Date:   [A-Z][a-z]{2} [A-Z][a-z]{2} [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{4} \+[0-9]{4}")
+            re.compile("(Date:   )([A-Z][a-z]{2}) ([A-Z][a-z]{2} [0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{4}) (\+[0-9]{4})")
         match = re.fullmatch(pattern, input)
         if match:
+            GitLogParser.logposts[-1].update({'Date': match.group(3)})
             return GitLogParser.lookForShortName
 
         return GitLogParser.lookForDate

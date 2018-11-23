@@ -10,13 +10,13 @@ def print_results(results, first_branch_name, second_branch_name):
 
     print('Unique changes on ' + first_branch_name + ':')
     print('-'*60)
-    for entry in results['first']:
+    for entry in sorted(results['first'], key=lambda log_post: log_post.date, reverse=True):
         print(entry)
 
     print('')
     print('-' * 60)
     print('Unique changes on ' + second_branch_name + ':')
-    for entry in results['second']:
+    for entry in sorted(results['second'], key=lambda log_post: log_post.date, reverse=True):
         print(entry)
 
 
@@ -36,9 +36,10 @@ def diff_changes(changes_in_first_branch, changes_in_second_branch):
 def create_gerrit_changes(raw_git_log):
 
     GitLogParser().run_all(raw_git_log)
-    gerrit_changes =  []
+    gerrit_changes = []
     for log_post in GitLogParser.logposts:
-        gerrit_changes.append(GerritChange(log_post['CommitId'], log_post['ShortName'], log_post.get('ChangeId', "")))
+        gerrit_changes.append(GerritChange(log_post['CommitId'], log_post['ShortName'],
+                                           log_post.get('ChangeId', ""), log_post.get('Date')))
     return gerrit_changes
 
 
